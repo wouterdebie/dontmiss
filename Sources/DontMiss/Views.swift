@@ -3,13 +3,17 @@ import DontMissCore
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Don't Miss").font(.largeTitle.bold())
-                    Text("Meetings that won't slip past you.").foregroundStyle(.secondary)
+                HStack(spacing: 16) {
+                    AppIconView(size: 64)
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Don't Miss").font(.largeTitle.bold())
+                        Text("Meetings that won't slip past you.").foregroundStyle(.secondary)
+                    }
                 }
                 GroupBox("Google accounts") {
                     VStack(alignment: .leading, spacing: 12) {
@@ -108,5 +112,6 @@ struct SettingsView: View {
             .padding(24)
         }
         .frame(minWidth: 560, minHeight: 650)
+        .tint(ReminderPalette.accent(for: colorScheme))
     }
 }

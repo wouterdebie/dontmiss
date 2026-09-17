@@ -43,27 +43,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("--smoke-menubar-icon") {
-            let passed = MenuBarIcon.checkResources()
-            print(passed ? "PASS: normal and attention menu-bar templates load at all three resolutions." : "FAIL: menu-bar icon resources.")
+            let passed = MenuBarIcon.checkResources() && AppIconView.checkResource()
+            print(passed ? "PASS: full-color app icon and normal/attention menu-bar templates load at all resolutions." : "FAIL: icon resources.")
             model.stop()
             exit(passed ? 0 : 1)
         }
         if arguments.contains("--smoke-updater") {
+            let defaultsValid = Bundle.main.object(forInfoDictionaryKey: "SUEnableAutomaticChecks") as? Bool == true
+                && Bundle.main.object(forInfoDictionaryKey: "SUScheduledCheckInterval") as? Int == 86400
+                && Bundle.main.object(forInfoDictionaryKey: "SUAutomaticallyUpdate") as? Bool == false
+                && Bundle.main.object(forInfoDictionaryKey: "SUAllowsAutomaticUpdates") as? Bool == false
             var overrides = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
-            overrides["SUEnableAutomaticChecks"] = false
+            let automaticChecks = !arguments.contains("--automatic-checks-off")
+            overrides["SUEnableAutomaticChecks"] = automaticChecks
             UserDefaults.standard.setVolatileDomain(overrides, forName: UserDefaults.argumentDomain)
             model.updates.start()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
                 let updates = model.updates
-                let passed = updates.started && updates.canCheck && !updates.automaticChecks && updates.error == nil
-                print(passed ? "PASS: Sparkle starts, manual checks are available, and automatic checks are off." : "FAIL: \(updates.error ?? "Updater state is invalid")")
+                let passed = defaultsValid && updates.started && updates.canCheck
+                    && updates.automaticChecks == automaticChecks && updates.error == nil
+                print(passed ? "PASS: daily checks default on, unattended installs stay off, and automatic checks are \(automaticChecks ? "on" : "off") in this test." : "FAIL: \(updates.error ?? "Updater defaults or state are invalid")")
                 model.stop()
                 exit(passed ? 0 : 1)
             }
             return
         }
         if arguments.contains("--smoke-agenda") {
-            model.prepareAgendaPreview()
+            model.prepareAgendaPreview(lightAppearance: arguments.contains("--light-appearance"))
             Task { @MainActor in
                 do {
                     try await Task.sleep(for: .seconds(2))

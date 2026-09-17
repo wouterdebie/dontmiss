@@ -15,11 +15,7 @@ struct MenuView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image(systemName: "bell.badge.fill")
-                    .font(.system(size: 21, weight: .medium))
-                    .foregroundStyle(accent)
-                    .frame(width: 44, height: 44)
-                    .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
+                AppIconView(size: 44)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Don't Miss").font(.system(size: 19, weight: .bold, design: .rounded))
                     Text("A little ahead of your day.").font(.caption).foregroundStyle(.secondary)
@@ -197,7 +193,8 @@ private struct AgendaEventRow: View {
             }
         }
         .padding(10)
-        .background(accent.opacity(hovered ? 0.13 : live ? 0.07 : 0.035), in: RoundedRectangle(cornerRadius: 12))
+        .background(ReminderPalette.gradient(for: colorScheme).opacity(hovered ? 0.13 : live ? 0.07 : 0.035),
+                    in: RoundedRectangle(cornerRadius: 12))
         .overlay {
             RoundedRectangle(cornerRadius: 12).strokeBorder(accent.opacity(hovered ? 0.3 : 0.07), lineWidth: 1)
         }

@@ -33,13 +33,20 @@ final class OverlayController {
     var coversSelectedScreen: Bool {
         guard panels.count == 1, let panel = panels.first,
               let backdrop = panel.contentView as? NSVisualEffectView,
-              let screen = NSScreen.screens.first(where: { displayID($0) == targetDisplayID }) else { return false }
-        return panel.isVisible && panel.frame == screen.frame && panel.level == .screenSaver
+              let screen = NSScreen.screens.first(where: { displayID($0) == targetDisplayID }) else {
+            print("FAIL: reminder window, blur view or selected display is missing; panel count=\(panels.count).")
+            return false
+        }
+        let passed = panel.isVisible && panel.frame == screen.frame && panel.level == .screenSaver
             && panel.collectionBehavior.contains(.canJoinAllSpaces)
             && panel.collectionBehavior.contains(.fullScreenAuxiliary)
             && !panel.isOpaque && panel.backgroundColor == .clear
             && backdrop.blendingMode == .behindWindow && backdrop.state == .active
             && backdrop.material == .hudWindow
+        if !passed {
+            print("FAIL: reminder state: visible=\(panel.isVisible), frame=\(panel.frame), screen=\(screen.frame), level=\(panel.level.rawValue), behavior=\(panel.collectionBehavior.rawValue), opaque=\(panel.isOpaque), background=\(panel.backgroundColor), blending=\(backdrop.blendingMode.rawValue), state=\(backdrop.state.rawValue), material=\(backdrop.material.rawValue).")
+        }
+        return passed
     }
 
     func show(_ meeting: Meeting, queued: Int, action: @escaping (OverlayAction) -> Void) {
@@ -125,16 +132,6 @@ final class OverlayController {
     }
 }
 
-enum ReminderPalette {
-    static let mint = Color(red: 0.38, green: 0.89, blue: 0.76)
-    static let text = Color(red: 0.93, green: 0.97, blue: 0.98)
-    static let secondaryText = Color(red: 0.72, green: 0.82, blue: 0.84)
-    static let ink = Color(red: 0.025, green: 0.10, blue: 0.12)
-    static func accent(for scheme: ColorScheme) -> Color {
-        scheme == .dark ? mint : Color(red: 0.08, green: 0.43, blue: 0.36)
-    }
-}
-
 private struct AlertView: View {
     @ObservedObject var content: AlertContent
 
@@ -142,7 +139,7 @@ private struct AlertView: View {
         ZStack {
             ReminderPalette.ink.opacity(0.22).ignoresSafeArea()
             VStack(spacing: 24) {
-                Image(systemName: "bell.badge.fill").font(.system(size: 48)).foregroundStyle(ReminderPalette.mint)
+                AppIconView(size: 80)
                 Text("DON'T MISS").font(.headline).tracking(5).foregroundStyle(ReminderPalette.secondaryText)
                 Text(content.meeting.title)
                     .font(.system(size: 52, weight: .bold, design: .rounded))
@@ -152,7 +149,7 @@ private struct AlertView: View {
                     Text(seconds > 0 ? "Starts in \(seconds / 60):\(String(format: "%02d", seconds % 60))"
                          : "Started \(abs(seconds) / 60)m ago")
                         .font(.system(size: 32, weight: .medium, design: .monospaced))
-                        .foregroundStyle(ReminderPalette.mint)
+                        .foregroundStyle(ReminderPalette.gradient(for: .dark))
                         .accessibilityLabel(seconds > 0 ? "Starts in \(seconds) seconds" : "Meeting has started")
                 }
                 Text("\(content.meeting.start.formatted(date: .omitted, time: .shortened)) - \(content.meeting.end.formatted(date: .omitted, time: .shortened))  |  \(content.meeting.calendarName)")
@@ -162,7 +159,7 @@ private struct AlertView: View {
                         Button { content.action(.join) } label: {
                             Text("Join meeting").foregroundStyle(ReminderPalette.ink)
                         }
-                        .buttonStyle(.borderedProminent).tint(ReminderPalette.mint)
+                        .buttonStyle(.borderedProminent).tint(ReminderPalette.blue)
                     }
                     Button("Snooze 1 minute") { content.action(.snooze) }.buttonStyle(.bordered)
                     Button("Dismiss") { content.action(.dismiss) }
@@ -178,7 +175,7 @@ private struct AlertView: View {
             .padding(48).frame(maxWidth: 1000)
         }
         .foregroundStyle(ReminderPalette.text)
-        .tint(ReminderPalette.mint)
+        .tint(ReminderPalette.blue)
         .preferredColorScheme(.dark)
     }
 }

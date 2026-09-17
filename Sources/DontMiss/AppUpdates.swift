@@ -80,7 +80,7 @@ struct UpdateSettingsView: View {
                 Toggle("Automatically check for updates", isOn: Binding(
                     get: { updates.automaticChecks }, set: { updates.setAutomaticChecks($0) }))
                     .disabled(!updates.started)
-                Text("Checks GitHub once a day when enabled. Downloads are signed and notarized; installation and restart require your approval.")
+                Text("Checks GitHub once a day while the app is running. On by default; you can turn checks off here. Downloads are signed and notarized; installation and restart require your approval.")
                     .font(.caption).foregroundStyle(.secondary)
                 if let lastCheck = updates.lastCheck {
                     Text("Last checked \(lastCheck.formatted(date: .abbreviated, time: .shortened))")

@@ -369,7 +369,7 @@ final class AppModel: NSObject, ObservableObject {
 
     func closeEvent() { eventWindow?.close() }
 
-    func prepareAgendaPreview() {
+    func prepareAgendaPreview(lightAppearance: Bool = false) {
         isPreviewSession = true
         restoring = false
         let events = AgendaPreview.meetings(now: now)
@@ -379,7 +379,7 @@ final class AppModel: NSObject, ObservableObject {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 440, height: 680),
                               styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Don't Miss - Agenda preview"
-        window.appearance = NSAppearance(named: .darkAqua)
+        window.appearance = NSAppearance(named: lightAppearance ? .aqua : .darkAqua)
         window.contentView = NSHostingView(rootView: MenuView(model: self))
         window.isReleasedWhenClosed = false
         window.center()
@@ -388,7 +388,7 @@ final class AppModel: NSObject, ObservableObject {
             showEvent(first)
             setReminder(for: first, muted: false, leadMinutes: 5)
         }
-        eventWindow?.appearance = NSAppearance(named: .darkAqua)
+        eventWindow?.appearance = window.appearance
         if let screen = NSScreen.main {
             window.setFrameOrigin(NSPoint(x: screen.visibleFrame.midX - 600, y: screen.visibleFrame.midY - 340))
             eventWindow?.setFrameOrigin(NSPoint(x: screen.visibleFrame.midX - 140, y: screen.visibleFrame.midY - 370))

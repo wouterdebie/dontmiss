@@ -5,22 +5,24 @@ and AppKit, inspired by [In Your Face](https://www.inyourface.app/mac/).
 
 ## Features
 
-- Mint-accented, frosted-glass alerts on the display containing your mouse pointer.
+- Cyan/blue/purple-accented, frosted-glass alerts on the display containing your mouse pointer.
 - Multiple Google accounts with independent calendar selection.
 - Day-grouped agenda with Today and Next 7 days views and a slim, edge-aligned scrollbar.
 - Clickable event details with guests, notes, meeting links, and local reminder controls.
 - Configurable lead time, one-minute snooze, dismissal, and one-click meeting join.
 - Offline reminders from a local cache, optional sound, and launch at login.
 - Read-only Calendar access; OAuth credentials stay in macOS Keychain.
-- Signed updates through Sparkle, with optional daily checks and user-approved installation.
+- Signed updates through Sparkle, with daily checks and user-approved installation.
 
 ## Install
 
 Release builds support **Apple Silicon Macs running macOS 14+**. Download the ZIP
 from [GitHub Releases](https://github.com/wouterdebie/dontmiss/releases), unzip it,
 and move **Don't Miss.app** to Applications.
-Use **Check for Updates** from the menu or Settings. Automatic checks are off by
-default; even when enabled, installing an update requires your approval.
+Use **Check for Updates** from the menu or Settings. Automatic checks are on by
+default and run once a day while the app is running. You can turn them off in
+Settings; an existing opt-out is preserved. Installing an update always requires
+your approval.
 
 ## Build and run
 
@@ -49,7 +51,8 @@ and macOS ICNS sizes, run `bash scripts/generate-icon.sh` with `rsvg-convert`
 (Homebrew's `librsvg`) installed. This also regenerates the monochrome ringing-bell
 menu-bar templates in [Resources/menubar](Resources/menubar), including the
 calendar-attention badge and 1x/2x/3x sizes. Normal builds use the tracked images
-directly, without needing the renderer.
+directly, without needing the renderer. The agenda, Settings, and reminder overlay
+reuse the full-color app icon and its palette, with darker accents for light mode.
 
 ## Releases
 
