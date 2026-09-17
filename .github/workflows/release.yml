@@ -72,6 +72,17 @@ jobs:
           printf '17e28312b8e18ab7cdbbe09a6fb28cc55a5479ec6c371dbc07cdecd2a14fd959  %s\n' \
             "$RUNNER_TEMP/sparkle.zip" | shasum -a 256 --check
           ditto -x -k "$RUNNER_TEMP/sparkle.zip" "$RUNNER_TEMP/sparkle-tools"
+      - name: Check Sparkle key against the pinned public key
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          set +x
+          set -euo pipefail
+          : "${SPARKLE_PRIVATE_KEY:?Missing SPARKLE_PRIVATE_KEY}"
+          printf '%s' "$SPARKLE_PRIVATE_KEY" |
+            env -u SPARKLE_PRIVATE_KEY swift scripts/verify-sparkle-key.swift \
+              "$RUNNER_TEMP/sparkle-tools/bin/sign_update" \
+              Resources/Info.plist "dist/Don't Miss.app/Contents/Info.plist"
       # Match Davit's rotation hardening: no raw secrets at workflow/job scope.
       # Build/test ran on a separate runner; private keys are never cached.
       - name: Import the pinned certificate and sign
@@ -117,25 +128,7 @@ jobs:
       - name: Sign update archive and appcast
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
-        run: |
-          set +x
-          set -euo pipefail
-          : "${SPARKLE_PRIVATE_KEY:?Missing SPARKLE_PRIVATE_KEY}"
-          printf '%s' "$SPARKLE_PRIVATE_KEY" |
-            env -u SPARKLE_PRIVATE_KEY "$RUNNER_TEMP/sparkle-tools/bin/generate_appcast" \
-              --ed-key-file - \
-              --download-url-prefix "https://github.com/wouterdebie/dontmiss/releases/download/$GITHUB_REF_NAME/" \
-              --maximum-deltas 0 \
-              dist/release
-          test -s dist/release/appcast.xml
-          SIGNATURE="$(xmllint --xpath 'string(/rss/channel/item/enclosure/@*[local-name()="edSignature"])' dist/release/appcast.xml)"
-          test -n "$SIGNATURE"
-          printf '%s' "$SPARKLE_PRIVATE_KEY" |
-            env -u SPARKLE_PRIVATE_KEY "$RUNNER_TEMP/sparkle-tools/bin/sign_update" \
-              --ed-key-file - --verify dist/release/appcast.xml
-          printf '%s' "$SPARKLE_PRIVATE_KEY" |
-            env -u SPARKLE_PRIVATE_KEY "$RUNNER_TEMP/sparkle-tools/bin/sign_update" \
-              --ed-key-file - --verify "dist/release/DontMiss-$VERSION.zip" "$SIGNATURE"
+        run: bash scripts/sign-release.sh "$RUNNER_TEMP/sparkle-tools/bin"
       - name: Publish complete release
         env:
           GH_TOKEN: ${{ github.token }}

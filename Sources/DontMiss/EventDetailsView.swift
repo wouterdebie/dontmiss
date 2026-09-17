@@ -88,6 +88,9 @@ struct EventDetailsView: View {
                 if let location = meeting.location, !location.isEmpty {
                     Label(location, systemImage: "mappin.and.ellipse")
                         .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                    if EventLocation.searchQuery(for: location) != nil {
+                        EventLocationMapView(location: location).id(location)
+                    }
                 }
                 if let organizer = meeting.organizer {
                     Label("Organized by \(organizer.displayName)", systemImage: "person.crop.circle")

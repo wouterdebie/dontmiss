@@ -9,6 +9,7 @@ and AppKit, inspired by [In Your Face](https://www.inyourface.app/mac/).
 - Multiple Google accounts with independent calendar selection.
 - Day-grouped agenda with Today and Next 7 days views and a slim, edge-aligned scrollbar.
 - Clickable event details with guests, notes, meeting links, and local reminder controls.
+- Inline Apple Maps previews for event locations that resolve to a specific address or venue.
 - Configurable lead time, one-minute snooze, dismissal, and one-click meeting join.
 - Offline reminders from a local cache, optional sound, and launch at login.
 - Read-only Calendar access; OAuth credentials stay in macOS Keychain.
@@ -35,6 +36,9 @@ swift test
 bash scripts/bundle.sh
 open "dist/Don't Miss.app"
 ```
+
+Map lookup tests normally use local fixtures. To also verify a public sample address
+against Apple's live service, run `DONTMISS_TEST_MAPS=1 swift test --filter EventLocationTests`.
 
 The bundler refuses to replace a running copy of its output. Quit that copy before
 rebuilding, or run the installed app in Applications while developing. Replacing a
@@ -71,6 +75,21 @@ Secrets are scoped to their consuming steps. The temporary signing keychain is
 deleted after signing; the Sparkle key is read through stdin, never exported to a file.
 Only the Sparkle public key is committed. No build caches contain signing material.
 
+Before certificate signing or notarization, releases prove that the supplied Sparkle
+private key can sign a test payload verifiable with `SUPublicEDKey` in
+`Resources/Info.plist`. The bundled public key must match that pin too. A mismatch
+fails the release rather than generating or replacing any key. The same preflight
+runs in `scripts/sign-release.sh` before generating the appcast.
+
+For local release signing after notarizing and archiving, run
+`VERSION="1.2.3" bash scripts/sign-release.sh /path/to/sparkle-tools/bin` with
+`SPARKLE_PRIVATE_KEY` supplied through your secret manager's environment.
+The script passes the key on stdin, never through arguments or a key file.
+It does not read or modify Keychain. Do not run `generate_keys` to resolve a
+missing-key error: restore the existing key that matches the committed public key.
+Run `swift scripts/test-sparkle-key.swift` to test this guard using disposable
+in-memory keys and the pinned Sparkle tools, without accessing your signing key.
+
 Forks must change the certificate pins, feed/repository URLs, and Sparkle public key.
 Sparkle verifies the signed feed and archive **before extraction**. Preserve the
 dedicated private key: rotating it requires a migration release using a
@@ -101,6 +120,16 @@ Click an event to preview its alert, join or copy its meeting link, view guests 
 notes, or open it in Google Calendar. Mute and custom lead time apply only to that
 occurrence, not the entire recurring series. These preferences stay local; the app
 does not create or edit calendar events.
+
+Event details look up physical locations using Apple Maps and show an inline map
+when a single specific address or venue is returned. Click the map or **Open in
+Apple Maps** to open that place in Maps. Obvious online locations, meeting URLs,
+and simple room labels are skipped. Unresolved or ambiguous locations keep their
+original text with an explanation; failed lookups can be retried.
+Lookup requires an internet connection and sends the event's location text to
+Apple when you open event details. It does not request or use your device's location.
+Search results are not a guarantee that an address is correct; check the displayed
+place before traveling.
 
 Keep the app running: it cannot alert while your Mac is asleep or at the lock screen.
 Calendars refresh every minute, with seven days of events cached locally. To use launch

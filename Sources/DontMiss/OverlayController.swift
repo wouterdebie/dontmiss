@@ -44,7 +44,7 @@ final class OverlayController {
             && backdrop.blendingMode == .behindWindow && backdrop.state == .active
             && backdrop.material == .hudWindow
         if !passed {
-            print("FAIL: reminder state: visible=\(panel.isVisible), frame=\(panel.frame), screen=\(screen.frame), level=\(panel.level.rawValue), behavior=\(panel.collectionBehavior.rawValue), opaque=\(panel.isOpaque), background=\(panel.backgroundColor), blending=\(backdrop.blendingMode.rawValue), state=\(backdrop.state.rawValue), material=\(backdrop.material.rawValue).")
+            print("FAIL: reminder state: visible=\(panel.isVisible), frame=\(panel.frame), screen=\(screen.frame), level=\(panel.level.rawValue), behavior=\(panel.collectionBehavior.rawValue), opaque=\(panel.isOpaque), background=\(String(describing: panel.backgroundColor)), blending=\(backdrop.blendingMode.rawValue), state=\(backdrop.state.rawValue), material=\(backdrop.material.rawValue).")
         }
         return passed
     }
