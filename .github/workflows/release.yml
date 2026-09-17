@@ -105,7 +105,7 @@ jobs:
             exit 1
           }
           CODESIGN_IDENTITY="$EXPECTED_CERT_SHA1" bash scripts/sign.sh
-          lipo -verify_arch arm64 "dist/Don't Miss.app/Contents/MacOS/DontMiss"
+          lipo "dist/Don't Miss.app/Contents/MacOS/DontMiss" -verify_arch arm64
       - name: Notarize and staple
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
