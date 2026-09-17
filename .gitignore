@@ -1,0 +1,8 @@
+.build/
+.swiftpm/
+dist/
+.DS_Store
+client_secret*.json
+credentials*.json
+*.p12
+.env

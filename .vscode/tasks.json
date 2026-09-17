@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Don't Miss: build",
+            "type": "shell",
+            "command": "swift",
+            "args": ["build"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$swiftc"]
+        },
+        {
+            "label": "Don't Miss: test",
+            "type": "shell",
+            "command": "swift",
+            "args": ["test"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "test",
+            "problemMatcher": ["$swiftc"]
+        },
+        {
+            "label": "Don't Miss: bundle",
+            "type": "shell",
+            "command": "bash",
+            "args": ["scripts/bundle.sh"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": ["$swiftc"]
+        }
+    ]
+}
