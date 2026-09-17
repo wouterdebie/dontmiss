@@ -61,6 +61,10 @@ without signing secrets, then signs and notarizes on a **fresh runner**. Only af
 verification succeeds does it publish a ZIP, SHA-256 checksum, and signed Sparkle
 appcast together in a GitHub Release. Both bundle versions come from the tag.
 
+CI also uploads and downloads the unsigned bundle through the pinned artifact
+actions, verifying archive integrity, executable permissions, framework symlinks,
+and code signatures before those actions are used in a release.
+
 Required Actions secrets: `MACOS_CERT_P12` (base64 P12), `MACOS_CERT_PASSWORD`,
 `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `SPARKLE_PRIVATE_KEY`.
 Secrets are scoped to their consuming steps. The temporary signing keychain is

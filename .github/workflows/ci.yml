@@ -14,10 +14,10 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: latest-stable
       - name: Resolve locked dependencies
@@ -33,3 +33,27 @@ jobs:
         env:
           BUILD_ARCH: arm64
         run: bash scripts/bundle.sh
+      - name: Archive bundle for artifact round-trip
+        run: ditto -c -k --keepParent "dist/Don't Miss.app" dist/DontMiss-build.zip
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ci-bundle
+          path: dist/DontMiss-build.zip
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ci-bundle
+          path: dist/artifact-roundtrip
+      - name: Verify artifact round-trip
+        run: |
+          set -euo pipefail
+          cmp dist/DontMiss-build.zip dist/artifact-roundtrip/DontMiss-build.zip
+          ditto -x -k dist/artifact-roundtrip/DontMiss-build.zip dist/artifact-roundtrip
+          APP="dist/artifact-roundtrip/Don't Miss.app"
+          FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"
+          test -x "$APP/Contents/MacOS/DontMiss"
+          test -L "$FRAMEWORK/Versions/Current"
+          test -L "$FRAMEWORK/Sparkle"
+          test -x "$FRAMEWORK/Versions/Current/Autoupdate"
+          codesign --verify --deep --strict "$APP"
