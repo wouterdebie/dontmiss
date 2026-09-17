@@ -34,6 +34,10 @@ bash scripts/bundle.sh
 open "dist/Don't Miss.app"
 ```
 
+The bundler refuses to replace a running copy of its output. Quit that copy before
+rebuilding, or run the installed app in Applications while developing. Replacing a
+live app bundle can prevent macOS from authorizing its updater.
+
 Official signing is pinned to the current Developer ID certificate fingerprint in
 `scripts/sign.sh`. Set `CODESIGN_IDENTITY` to that fingerprint when bundling;
 otherwise signing is ad-hoc. For local notarization, run

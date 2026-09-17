@@ -2,13 +2,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+APP="$PWD/dist/Don't Miss.app"
+swift scripts/require-stopped-app.swift "$APP"
 VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "VERSION must be major.minor.patch" >&2; exit 1; }
 BUILD_ARGS=(-c release --disable-automatic-resolution)
 if [ -n "${BUILD_ARCH:-}" ]; then BUILD_ARGS+=(--arch "$BUILD_ARCH"); fi
 swift build "${BUILD_ARGS[@]}"
 BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)"
-APP="$PWD/dist/Don't Miss.app"
 mkdir -p "$PWD/dist"
 STAGING="$(mktemp -d "$PWD/dist/.bundle.XXXXXX")"
 trap 'rm -rf "$STAGING"' EXIT
@@ -22,6 +23,8 @@ ditto "$BIN/Sparkle.framework" "$NEW/Contents/Frameworks/Sparkle.framework"
 cp .build/artifacts/sparkle/Sparkle/LICENSE "$NEW/Contents/Resources/Sparkle-LICENSE.txt"
 bash scripts/sign.sh "$NEW"
 
+# The destination may have been launched while the build was running.
+swift scripts/require-stopped-app.swift "$APP"
 if [ -e "$APP" ]; then
     [ ! -L "$APP" ] && [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Contents/Info.plist")" = "dev.wouter.dontmiss" ] \
         || { echo "Refusing to replace an unexpected bundle at $APP" >&2; exit 1; }
