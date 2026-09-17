@@ -43,6 +43,14 @@ Official signing is pinned to the current Developer ID certificate fingerprint i
 otherwise signing is ad-hoc. For local notarization, run
 `NOTARY_PROFILE="<Keychain profile>" bash scripts/notarize.sh`.
 
+The app icon shares Davit and Stack's navy/neon visual style. Its editable source
+is [Resources/AppIcon.svg](Resources/AppIcon.svg). To regenerate the tracked PNG
+and macOS ICNS sizes, run `bash scripts/generate-icon.sh` with `rsvg-convert`
+(Homebrew's `librsvg`) installed. This also regenerates the monochrome ringing-bell
+menu-bar templates in [Resources/menubar](Resources/menubar), including the
+calendar-attention badge and 1x/2x/3x sizes. Normal builds use the tracked images
+directly, without needing the renderer.
+
 ## Releases
 
 Push a `vMAJOR.MINOR.PATCH` tag on a commit from `main`. GitHub Actions tests/builds

@@ -17,6 +17,12 @@ NEW="$STAGING/Don't Miss.app"
 mkdir -p "$NEW/Contents/MacOS" "$NEW/Contents/Resources" "$NEW/Contents/Frameworks"
 cp "$BIN/DontMiss" "$NEW/Contents/MacOS/DontMiss"
 cp Resources/Info.plist "$NEW/Contents/Info.plist"
+cp Resources/AppIcon.icns "$NEW/Contents/Resources/AppIcon.icns"
+for name in DontMissTemplate DontMissAttentionTemplate; do
+    for suffix in "" "@2x" "@3x"; do
+        cp "Resources/menubar/$name$suffix.png" "$NEW/Contents/Resources/"
+    done
+done
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$NEW/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$NEW/Contents/Info.plist"
 ditto "$BIN/Sparkle.framework" "$NEW/Contents/Frameworks/Sparkle.framework"

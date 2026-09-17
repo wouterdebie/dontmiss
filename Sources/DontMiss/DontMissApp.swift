@@ -16,8 +16,22 @@ struct DontMissApp: App {
 
 private struct MenuLabel: View {
     @ObservedObject var model: AppModel
+
+    private var needsAttention: Bool { model.errors != nil || model.stale }
+
     var body: some View {
-        Label("Don't Miss", systemImage: model.errors != nil || model.stale ? "bell.badge" : "bell.fill")
+        Label {
+            Text("Don't Miss")
+        } icon: {
+            if let image = needsAttention ? MenuBarIcon.attention : MenuBarIcon.regular {
+                Image(nsImage: image).renderingMode(.template)
+            } else {
+                Image(systemName: needsAttention ? "bell.badge" : "bell.fill")
+            }
+        }
+        .labelStyle(.iconOnly)
+        .help(needsAttention ? "Don't Miss - calendar needs attention" : "Don't Miss")
+        .accessibilityValue(needsAttention ? "Calendar needs attention" : "")
     }
 }
 
@@ -28,6 +42,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--smoke-menubar-icon") {
+            let passed = MenuBarIcon.checkResources()
+            print(passed ? "PASS: normal and attention menu-bar templates load at all three resolutions." : "FAIL: menu-bar icon resources.")
+            model.stop()
+            exit(passed ? 0 : 1)
+        }
         if arguments.contains("--smoke-updater") {
             var overrides = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
             overrides["SUEnableAutomaticChecks"] = false

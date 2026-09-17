@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A1020"/>
+      <stop offset="1" stop-color="#04060E"/>
+    </linearGradient>
+    <linearGradient id="outline" gradientUnits="userSpaceOnUse" x1="0" y1="85" x2="0" y2="440">
+      <stop offset="0" stop-color="#7DFFF0"/>
+      <stop offset=".5" stop-color="#57B8FF"/>
+      <stop offset="1" stop-color="#A45CFF"/>
+    </linearGradient>
+    <linearGradient id="front" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="0" y2="472">
+      <stop offset="0" stop-color="#153A66"/>
+      <stop offset="1" stop-color="#0B1E3A"/>
+    </linearGradient>
+    <linearGradient id="side" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="0" y2="472">
+      <stop offset="0" stop-color="#0D2646"/>
+      <stop offset="1" stop-color="#06121F"/>
+    </linearGradient>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#background)"/>
+
+  <g stroke="url(#outline)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <g fill="none">
+      <path d="M106 101 C79 125 65 157 69 189"/>
+      <path d="M129 124 C111 141 103 162 106 184"/>
+      <path d="M396 109 C424 134 438 167 433 200"/>
+      <path d="M373 133 C391 150 399 172 396 194"/>
+    </g>
+
+    <g transform="translate(256 260) scale(1.18) translate(-256 -260) rotate(-8 256 260)">
+      <path d="M235 143 L235 124 C235 99 268 99 268 124 L268 143"
+            fill="url(#side)" fill-opacity=".85"/>
+
+      <path d="M125 329
+               C154 299 165 265 168 223
+               C172 171 207 135 251 135
+               C297 135 334 169 340 219
+               C345 264 358 298 387 328
+               C397 340 388 351 372 358
+               C305 388 202 383 137 356
+               C120 349 115 340 125 329 Z"
+            fill="url(#front)" fill-opacity=".85"/>
+
+      <path d="M251 135
+               C297 135 334 169 340 219
+               C345 264 358 298 387 328
+               C397 340 388 351 372 358
+               L331 367
+               C307 331 302 285 300 235
+               C297 188 280 155 251 135 Z"
+            fill="url(#side)" fill-opacity=".85" stroke="none"/>
+
+      <path d="M251 135 C280 155 297 188 300 235 C302 285 307 331 331 367"
+            fill="none" stroke-width="2.1" opacity=".65"/>
+
+      <ellipse cx="256" cy="343" rx="135" ry="34"
+               fill="url(#side)" fill-opacity=".95"/>
+      <path d="M256 348 L256 392" fill="none"/>
+      <ellipse cx="256" cy="397" rx="19" ry="17"
+               fill="url(#front)" fill-opacity=".85"/>
+      <path d="M132 350 C194 384 314 385 380 350"
+            fill="none" stroke-width="2.1" opacity=".6"/>
+    </g>
+  </g>
+</svg>

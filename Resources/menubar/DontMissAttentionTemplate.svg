@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <defs>
+    <mask id="badge-space" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36">
+      <rect width="36" height="36" fill="#fff"/>
+      <circle cx="29.7" cy="6" r="5.7" fill="#000"/>
+    </mask>
+  </defs>
+  <use href="DontMissTemplate.svg#glyph" mask="url(#badge-space)"/>
+  <circle cx="29.7" cy="6" r="3.7" fill="#000"/>
+</svg>
