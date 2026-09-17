@@ -3,6 +3,37 @@ import DontMissCore
 
 @MainActor
 enum AgendaPreview {
+    static func checkScroller(in view: NSView) -> Bool {
+        guard let scrollView = findScrollView(in: view), let scroller = scrollView.verticalScroller else {
+            print("FAIL: agenda vertical scrollbar is missing.")
+            return false
+        }
+        let frame = scrollView.convert(scrollView.bounds, to: view)
+        let scrollerFrame = scroller.convert(scroller.bounds, to: view)
+        let knobWidth = scroller.rect(for: .knob).width
+        guard abs(frame.maxX - view.bounds.maxX) <= 1,
+              abs(scrollerFrame.maxX - view.bounds.maxX) <= 1,
+              scrollView.scrollerStyle == .overlay, scroller.controlSize == .small,
+              knobWidth > 0, knobWidth <= 8,
+              scrollView.documentView?.bounds.height ?? 0 > scrollView.contentView.bounds.height else {
+            print("FAIL: agenda scrollbar geometry/style: scroll=\(frame), scroller=\(scrollerFrame), knob=\(knobWidth), style=\(scrollView.scrollerStyle.rawValue), size=\(scroller.controlSize.rawValue)")
+            return false
+        }
+        let origin = scrollView.contentView.bounds.origin
+        scrollView.contentView.scroll(to: NSPoint(x: origin.x, y: origin.y + 60))
+        scrollView.reflectScrolledClipView(scrollView.contentView)
+        let moved = scrollView.contentView.bounds.origin.y > origin.y
+        scrollView.contentView.scroll(to: origin)
+        scrollView.reflectScrolledClipView(scrollView.contentView)
+        if !moved { print("FAIL: agenda content did not scroll.") }
+        return moved
+    }
+
+    private static func findScrollView(in view: NSView) -> NSScrollView? {
+        if let scrollView = view as? NSScrollView { return scrollView }
+        return view.subviews.lazy.compactMap { findScrollView(in: $0) }.first
+    }
+
     static func meetings(now: Date) -> [Meeting] {
         let guests = [
             MeetingGuest(name: "Alex Rivera", email: "alex@example.invalid", response: "accepted", isOrganizer: true),

@@ -7,7 +7,7 @@ and AppKit, inspired by [In Your Face](https://www.inyourface.app/mac/).
 
 - Mint-accented, frosted-glass alerts on the display containing your mouse pointer.
 - Multiple Google accounts with independent calendar selection.
-- Day-grouped agenda with Today and Next 7 days views.
+- Day-grouped agenda with Today and Next 7 days views and a slim, edge-aligned scrollbar.
 - Clickable event details with guests, notes, meeting links, and local reminder controls.
 - Configurable lead time, one-minute snooze, dismissal, and one-click meeting join.
 - Offline reminders from a local cache, optional sound, and launch at login.

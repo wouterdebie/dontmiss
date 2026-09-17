@@ -404,6 +404,7 @@ final class AppModel: NSObject, ObservableObject {
               agendaView.bounds.width >= 440, detailView.bounds.width >= 540,
               upcoming.count == 6, let first = upcoming.first,
               eventPreferences.preference(for: first)?.leadMinutes == 5 else { return false }
+        guard AgendaPreview.checkScroller(in: agendaView) else { return false }
         if let snapshotDirectory {
             try FileManager.default.createDirectory(at: snapshotDirectory, withIntermediateDirectories: true)
             try AgendaPreview.save(view: agendaView, to: snapshotDirectory.appendingPathComponent("agenda.png"))

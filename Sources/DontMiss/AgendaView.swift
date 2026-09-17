@@ -5,6 +5,7 @@ struct MenuView: View {
     @ObservedObject var model: AppModel
     @Environment(\.colorScheme) private var colorScheme
     @State private var todayOnly = false
+    private let contentInset: CGFloat = 18
 
     private var accent: Color { ReminderPalette.accent(for: colorScheme) }
     private var days: [AgendaDay] {
@@ -26,15 +27,17 @@ struct MenuView: View {
                 Spacer(minLength: 4)
                 toolbar
             }
+            .padding(.horizontal, contentInset)
             Picker("Agenda range", selection: $todayOnly) {
                 Text("Today").tag(true)
                 Text("Next 7 days").tag(false)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .padding(.horizontal, contentInset)
 
             if !model.connected || model.selectedIDs.isEmpty || days.isEmpty {
-                emptyState
+                emptyState.padding(.horizontal, contentInset)
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 16) {
@@ -54,6 +57,8 @@ struct MenuView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                    .padding(.horizontal, contentInset)
+                    .background(AgendaScrollStyle())
                 }
                 .frame(height: min(460, CGFloat(days.reduce(0) { $0 + $1.meetings.count }) * 94 + CGFloat(days.count) * 34))
             }
@@ -65,11 +70,13 @@ struct MenuView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.plain).help("Open Settings for error details")
+                .padding(.horizontal, contentInset)
             } else if model.stale {
                 Label("Schedule may be out of date", systemImage: "exclamationmark.triangle")
                     .font(.caption).foregroundStyle(.orange)
+                    .padding(.horizontal, contentInset)
             }
-            Divider()
+            Divider().padding(.horizontal, contentInset)
             HStack {
                 if model.refreshing {
                     ProgressView().controlSize(.mini)
@@ -85,8 +92,9 @@ struct MenuView: View {
                 Button("Quit") { NSApp.terminate(nil) }
                     .buttonStyle(.borderless).font(.caption).foregroundStyle(.secondary)
             }
+            .padding(.horizontal, contentInset)
         }
-        .padding(18).frame(width: 440)
+        .padding(.vertical, 18).frame(width: 440)
         .tint(accent)
     }
 
