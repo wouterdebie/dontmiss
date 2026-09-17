@@ -32,6 +32,7 @@ final class AppModel: NSObject, ObservableObject {
     @Published private(set) var loginEnabled = SMAppService.mainApp.status == .enabled
 
     let oauth = GoogleAccounts()
+    let updates = AppUpdates()
     private var ledger = ReminderLedger()
     private let overlay = OverlayController()
     private var clock: Timer?
@@ -72,6 +73,7 @@ final class AppModel: NSObject, ObservableObject {
     }
 
     func start(onReady: (@MainActor () -> Void)? = nil) {
+        updates.start()
         do {
             clientConfigured = try oauth.hasClientConfiguration()
             accounts = try oauth.accounts()

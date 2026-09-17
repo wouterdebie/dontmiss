@@ -81,6 +81,7 @@ struct MenuView: View {
                     Text("Read-only. Always your calendar.").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
+                CheckForUpdatesButton(updates: model.updates)
                 Button("Quit") { NSApp.terminate(nil) }
                     .buttonStyle(.borderless).font(.caption).foregroundStyle(.secondary)
             }

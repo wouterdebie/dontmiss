@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
+        with:
+          xcode-version: latest-stable
+      - name: Resolve locked dependencies
+        run: swift package resolve
+      - name: Test
+        run: swift test --disable-automatic-resolution
+      - name: Validate packaging scripts and plist
+        run: |
+          bash -n scripts/bundle.sh scripts/sign.sh scripts/notarize.sh scripts/prepare-release.sh
+          plutil -lint Resources/Info.plist
+      - name: Build development bundle
+        env:
+          BUILD_ARCH: arm64
+        run: bash scripts/bundle.sh

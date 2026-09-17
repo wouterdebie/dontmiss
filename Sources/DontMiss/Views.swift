@@ -98,6 +98,7 @@ struct SettingsView: View {
                     }
                     .padding(8)
                 }
+                UpdateSettingsView(updates: model.updates)
                 if let errors = model.errors {
                     Text(errors).foregroundStyle(.red).textSelection(.enabled)
                 }

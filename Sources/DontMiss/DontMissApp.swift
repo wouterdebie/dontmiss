@@ -28,6 +28,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("--smoke-updater") {
+            var overrides = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+            overrides["SUEnableAutomaticChecks"] = false
+            UserDefaults.standard.setVolatileDomain(overrides, forName: UserDefaults.argumentDomain)
+            model.updates.start()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
+                let updates = model.updates
+                let passed = updates.started && updates.canCheck && !updates.automaticChecks && updates.error == nil
+                print(passed ? "PASS: Sparkle starts, manual checks are available, and automatic checks are off." : "FAIL: \(updates.error ?? "Updater state is invalid")")
+                model.stop()
+                exit(passed ? 0 : 1)
+            }
+            return
+        }
         if arguments.contains("--smoke-agenda") {
             model.prepareAgendaPreview()
             Task { @MainActor in
