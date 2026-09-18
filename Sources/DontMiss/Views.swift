@@ -92,8 +92,19 @@ struct SettingsView: View {
                             Text(model.leadMinutes == 0 ? "Alert at event start" : "Alert \(model.leadMinutes) minute(s) before")
                         }
                         Toggle("Play a sound when the alert appears", isOn: $model.soundEnabled)
-                        Toggle("Start Don't Miss at login", isOn: Binding(
+                        Toggle("Run at startup", isOn: Binding(
                             get: { model.loginEnabled }, set: { model.setLoginEnabled($0) }))
+                            .disabled(!model.loginAvailable)
+                        Text(model.loginAvailable
+                             ? "Starts Don't Miss when you log in to your Mac. Enabled by default; you can turn it off here."
+                             : "Move Don't Miss to Applications and open it there to enable run at startup.")
+                            .font(.caption).foregroundStyle(.secondary)
+                        if model.loginRequiresApproval {
+                            Label("Approve Don't Miss in System Settings > General > Login Items.",
+                                  systemImage: "info.circle")
+                                .font(.caption).foregroundStyle(.secondary)
+                            Button("Open Login Items Settings") { model.openLoginSettings() }
+                        }
                         Button("Show test alert on this display") { model.testAlert() }
                         Text("Alerts appear only on the display containing your mouse pointer when they fire. They stay on that display until dismissed; other displays remain usable.")
                             .font(.caption).foregroundStyle(.secondary)

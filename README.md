@@ -164,8 +164,14 @@ Search results are not a guarantee that an address is correct; check the display
 place before traveling.
 
 Keep the app running: it cannot alert while your Mac is asleep or at the lock screen.
-Calendars refresh every minute, with seven days of events cached locally. To use launch
-at login, install the app in Applications first.
+Calendars refresh every minute, with seven days of events cached locally.
+**Run at startup** is enabled by default after opening the app from Applications
+(including your user Applications folder). Existing installations also get a
+one-time attempt to enable it when upgrading to this behavior. You can turn it off
+in Settings; later choices in the app or macOS Login Items are respected and never
+automatically re-enabled. If macOS requires approval, Settings shows a link to
+System Settings > General > Login Items. Failed registration is reported and can
+be retried using the toggle. DMG and development copies never register themselves.
 
 ## License
 

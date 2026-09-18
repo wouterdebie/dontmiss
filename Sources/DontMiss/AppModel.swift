@@ -29,10 +29,13 @@ final class AppModel: NSObject, ObservableObject {
     @Published var soundEnabled: Bool {
         didSet { UserDefaults.standard.set(soundEnabled, forKey: "soundEnabled") }
     }
-    @Published private(set) var loginEnabled = SMAppService.mainApp.status == .enabled
+    @Published private(set) var loginEnabled = false
+    @Published private(set) var loginRequiresApproval = false
+    @Published private(set) var loginError: String?
 
     let oauth = GoogleAccounts()
     let updates = AppUpdates()
+    private let loginSettings = LoginItemSettings()
     private var ledger = ReminderLedger()
     private let overlay = OverlayController()
     private var clock: Timer?
@@ -52,7 +55,7 @@ final class AppModel: NSObject, ObservableObject {
     var selectedIDs: Set<String> { Set(schedules.accounts.values.flatMap { $0.selectedIDs ?? [] }) }
     var lastSync: Date? { schedules.accounts.values.compactMap(\.lastSync).min() }
     var errors: String? {
-        let messages = [operationError, storageError].compactMap { $0 }
+        let messages = [operationError, storageError, loginError].compactMap { $0 }
             + syncErrors.keys.sorted().compactMap { syncErrors[$0] }
         return messages.isEmpty ? nil : messages.joined(separator: "\n\n")
     }
@@ -70,10 +73,14 @@ final class AppModel: NSObject, ObservableObject {
         leadMinutes = max(0, min(30, defaults.integer(forKey: "leadMinutes")))
         soundEnabled = defaults.bool(forKey: "soundEnabled")
         super.init()
+        refreshLoginStatus()
     }
 
     func start(onReady: (@MainActor () -> Void)? = nil) {
         updates.start()
+        do { try loginSettings.applyDefault() }
+        catch { loginError = "Run at startup: \(error.localizedDescription)" }
+        refreshLoginStatus()
         do {
             clientConfigured = try oauth.hasClientConfiguration()
             accounts = try oauth.accounts()
@@ -96,6 +103,8 @@ final class AppModel: NSObject, ObservableObject {
         }
         NotificationCenter.default.addObserver(self, selector: #selector(screensChanged),
                                                name: NSApplication.didChangeScreenParametersNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationBecameActive),
+                                               name: NSApplication.didBecomeActiveNotification, object: nil)
         Task {
             do {
                 accounts = try await oauth.restoreAccounts()
@@ -415,14 +424,25 @@ final class AppModel: NSObject, ObservableObject {
 
     func setLoginEnabled(_ enabled: Bool) {
         do {
-            if enabled { try SMAppService.mainApp.register() }
-            else { try SMAppService.mainApp.unregister() }
-            loginEnabled = SMAppService.mainApp.status == .enabled
-            if SMAppService.mainApp.status == .requiresApproval {
-                operationError = "Approve Don't Miss in System Settings > General > Login Items."
-                SMAppService.openSystemSettingsLoginItems()
-            } else { operationError = nil }
-        } catch { operationError = "Login item: \(error.localizedDescription)" }
+            try loginSettings.setEnabled(enabled)
+            loginError = nil
+        } catch { loginError = "Run at startup: \(error.localizedDescription)" }
+        refreshLoginStatus()
+        if enabled && loginRequiresApproval { openLoginSettings() }
+    }
+
+    var loginAvailable: Bool { loginSettings.isAvailable }
+
+    func openLoginSettings() { SMAppService.openSystemSettingsLoginItems() }
+
+    private func refreshLoginStatus() {
+        let status = loginSettings.status
+        loginEnabled = status == .enabled
+        loginRequiresApproval = status == .requiresApproval
+    }
+
+    @objc private func applicationBecameActive(_ notification: Notification) {
+        refreshLoginStatus()
     }
 
     func showSettings() {
