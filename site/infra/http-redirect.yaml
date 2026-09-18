@@ -1,0 +1,6 @@
+name: dontmiss-now-lb-redirect
+defaultUrlRedirect:
+  hostRedirect: dontmiss.now
+  httpsRedirect: true
+  redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
+  stripQuery: false

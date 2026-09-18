@@ -1,9 +1,20 @@
 #!/bin/bash
+set +x
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-APP="$PWD/dist/Don't Miss.app"
-ARCHIVE="$PWD/dist/DontMiss-notarize.zip"
+[ "$#" -le 1 ] || { echo "Usage: bash scripts/notarize.sh [disk-image.dmg]" >&2; exit 1; }
+if [ "$#" -eq 1 ]; then
+    [[ "$1" == *.dmg ]] && [ -f "$1" ] || { echo "Expected an existing .dmg file" >&2; exit 1; }
+    TARGET="$1"
+    ARCHIVE="$TARGET"
+    codesign --verify --strict "$TARGET"
+else
+    TARGET="$PWD/dist/Don't Miss.app"
+    ARCHIVE="$PWD/dist/DontMiss-notarize.zip"
+    codesign --verify --deep --strict "$TARGET"
+    ditto -c -k --keepParent "$TARGET" "$ARCHIVE"
+fi
 if [ -n "${NOTARY_PROFILE:-}" ]; then
     AUTH=(--keychain-profile "$NOTARY_PROFILE")
 else
@@ -12,8 +23,6 @@ else
     : "${APPLE_APP_SPECIFIC_PASSWORD:?Set APPLE_APP_SPECIFIC_PASSWORD}"
     AUTH=(--apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD")
 fi
-codesign --verify --deep --strict "$APP"
-ditto -c -k --keepParent "$APP" "$ARCHIVE"
 SUBMISSION="$(xcrun notarytool submit "$ARCHIVE" "${AUTH[@]}" --output-format json)"
 ID="$(printf '%s' "$SUBMISSION" | jq -er '.id')"
 echo "Notarization submission: $ID"
@@ -34,6 +43,10 @@ if [ "$STATUS" != "Accepted" ]; then
     echo "Notarization failed or timed out: $STATUS" >&2
     exit 1
 fi
-xcrun stapler staple "$APP"
-xcrun stapler validate "$APP"
-spctl --assess --type execute --verbose=2 "$APP"
+xcrun stapler staple "$TARGET"
+xcrun stapler validate "$TARGET"
+if [ "$#" -eq 1 ]; then
+    spctl --assess --type open --context context:primary-signature --verbose=2 "$TARGET"
+else
+    spctl --assess --type execute --verbose=2 "$TARGET"
+fi

@@ -48,7 +48,7 @@ jobs:
   release:
     needs: build
     runs-on: macos-15
-    timeout-minutes: 75
+    timeout-minutes: 130
     permissions:
       contents: write
     steps:
@@ -99,7 +99,7 @@ jobs:
           KEYCHAIN="$RUNNER_TEMP/dontmiss-signing.keychain-db"
           KEYCHAIN_PASSWORD="$(uuidgen)"
           echo "::add-mask::$KEYCHAIN_PASSWORD"
-          trap 'rm -f "$CERT"; security delete-keychain "$KEYCHAIN"' EXIT
+          trap 'rm -f "$CERT"' EXIT
           printf '%s' "$MACOS_CERT_P12" | base64 --decode > "$CERT"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           security set-keychain-settings -lut 3600 "$KEYCHAIN"
@@ -115,6 +115,7 @@ jobs:
             echo "Wrong signing certificate. Export the rotated certificate pinned in Davit." >&2
             exit 1
           }
+          echo "CODESIGN_IDENTITY=$EXPECTED_CERT_SHA1" >> "$GITHUB_ENV"
           CODESIGN_IDENTITY="$EXPECTED_CERT_SHA1" bash scripts/sign.sh
           lipo "dist/Don't Miss.app/Contents/MacOS/DontMiss" -verify_arch arm64
       - name: Notarize and staple
@@ -125,6 +126,32 @@ jobs:
         run: bash scripts/notarize.sh
       - name: Archive notarized application
         run: bash scripts/prepare-release.sh
+      - name: Build and sign the drag-to-Applications disk image
+        run: |
+          set -euo pipefail
+          mkdir -p dist/download
+          bash scripts/make-dmg.sh "dist/Don't Miss.app" dist/download/DontMiss.dmg
+          codesign --force --timestamp --sign "$CODESIGN_IDENTITY" dist/download/DontMiss.dmg
+          codesign --verify --strict dist/download/DontMiss.dmg
+      - name: Remove temporary signing keychain
+        if: always()
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/dontmiss-signing.keychain-db"
+          if [ -f "$KEYCHAIN" ]; then
+            security delete-keychain "$KEYCHAIN"
+          fi
+      - name: Notarize and staple the disk image
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: bash scripts/notarize.sh dist/download/DontMiss.dmg
+      - name: Verify final disk image and checksum
+        run: |
+          set -euo pipefail
+          bash scripts/check-dmg.sh dist/download/DontMiss.dmg
+          cd dist/download
+          shasum -a 256 DontMiss.dmg > DontMiss.dmg.sha256
       - name: Sign update archive and appcast
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
@@ -136,6 +163,9 @@ jobs:
           set -euo pipefail
           gh release create "$GITHUB_REF_NAME" --verify-tag --draft \
             --title "Don't Miss $VERSION" --generate-notes \
+            --notes "Download DontMiss.dmg, open it, and drag Don't Miss into Applications. The DMG and app are Developer ID signed and notarized. Requires macOS 14+ on Apple Silicon. The ZIP remains available for Sparkle updates." \
+            dist/download/DontMiss.dmg \
+            dist/download/DontMiss.dmg.sha256 \
             "dist/release/DontMiss-$VERSION.zip" \
             "dist/release/DontMiss-$VERSION.zip.sha256" \
             dist/release/appcast.xml

@@ -3,6 +3,9 @@
 A native macOS menu-bar app that makes meetings hard to miss. Built with SwiftUI
 and AppKit, inspired by [In Your Face](https://www.inyourface.app/mac/).
 
+**Free and open source.** Website: [dontmiss.now](https://dontmiss.now).
+Static website deployment and GCP hosting are documented in [site/README.md](site/README.md).
+
 ## Features
 
 - Cyan/blue/purple-accented, frosted-glass alerts on the display containing your mouse pointer.
@@ -17,9 +20,12 @@ and AppKit, inspired by [In Your Face](https://www.inyourface.app/mac/).
 
 ## Install
 
-Release builds support **Apple Silicon Macs running macOS 14+**. Download the ZIP
-from [GitHub Releases](https://github.com/wouterdebie/dontmiss/releases), unzip it,
-and move **Don't Miss.app** to Applications.
+Release builds support **Apple Silicon Macs running macOS 14+**.
+[Download the latest DMG](https://github.com/wouterdebie/dontmiss/releases/latest/download/DontMiss.dmg),
+open it, and drag **Don't Miss** onto the **Applications** folder in the disk image.
+Eject the image and open the app from Applications. The DMG and app are signed
+and notarized. The ZIP remains available on [GitHub Releases](https://github.com/wouterdebie/dontmiss/releases)
+for the in-app updater.
 Use **Check for Updates** from the menu or Settings. Automatic checks are on by
 default and run once a day while the app is running. You can turn them off in
 Settings; an existing opt-out is preserved. Installing an update always requires
@@ -49,6 +55,23 @@ Official signing is pinned to the current Developer ID certificate fingerprint i
 otherwise signing is ad-hoc. For local notarization, run
 `NOTARY_PROFILE="<Keychain profile>" bash scripts/notarize.sh`.
 
+To create a drag-to-Applications disk image from an existing bundle:
+
+```sh
+bash scripts/make-dmg.sh "dist/Don't Miss.app" dist/DontMiss.dmg
+bash scripts/check-dmg.sh dist/DontMiss.dmg
+```
+
+Normal image builds use macOS tools and a checked-in Finder-layout template, so
+CI does not need Finder automation or third-party tooling. The optional
+`scripts/Brewfile` installs `create-dmg` for reauthoring the layout template.
+
+The image builder refuses to overwrite an existing output and does not change the
+source app. A locally built image is a preview, not an official signed/notarized
+release. Official releases sign the DMG, run
+`bash scripts/notarize.sh dist/download/DontMiss.dmg`, then checksum the final
+stapled image.
+
 The app icon shares Davit and Stack's navy/neon visual style. Its editable source
 is [Resources/AppIcon.svg](Resources/AppIcon.svg). To regenerate the tracked PNG
 and macOS ICNS sizes, run `bash scripts/generate-icon.sh` with `rsvg-convert`
@@ -62,17 +85,25 @@ reuse the full-color app icon and its palette, with darker accents for light mod
 
 Push a `vMAJOR.MINOR.PATCH` tag on a commit from `main`. GitHub Actions tests/builds
 without signing secrets, then signs and notarizes on a **fresh runner**. Only after
-verification succeeds does it publish a ZIP, SHA-256 checksum, and signed Sparkle
-appcast together in a GitHub Release. Both bundle versions come from the tag.
+verification succeeds does it publish a signed/notarized `DontMiss.dmg`, the ZIP,
+SHA-256 checksums for both, and the signed Sparkle appcast together in a GitHub
+Release. Both bundle versions come from the tag.
+
+The DMG always uses the stable asset name `DontMiss.dmg`, so the website's
+`/releases/latest/download/DontMiss.dmg` link downloads the newest release directly.
+It has a drag-to-Applications layout and is verified by mounting it read-only in
+CI. The DMG lives in `dist/download`, separate from `dist/release`, so Sparkle's
+appcast generator only sees the ZIP and the existing update channel stays intact.
 
 CI also uploads and downloads the unsigned bundle through the pinned artifact
 actions, verifying archive integrity, executable permissions, framework symlinks,
-and code signatures before those actions are used in a release.
+and code signatures before those actions are used in a release. CI also builds
+and checks the DMG layout without release credentials.
 
 Required Actions secrets: `MACOS_CERT_P12` (base64 P12), `MACOS_CERT_PASSWORD`,
 `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `SPARKLE_PRIVATE_KEY`.
 Secrets are scoped to their consuming steps. The temporary signing keychain is
-deleted after signing; the Sparkle key is read through stdin, never exported to a file.
+deleted after app and DMG signing, including on failure; the Sparkle key is read through stdin, never exported to a file.
 Only the Sparkle public key is committed. No build caches contain signing material.
 
 Before certificate signing or notarization, releases prove that the supplied Sparkle
@@ -93,7 +124,8 @@ in-memory keys and the pinned Sparkle tools, without accessing your signing key.
 Forks must change the certificate pins, feed/repository URLs, and Sparkle public key.
 Sparkle verifies the signed feed and archive **before extraction**. Preserve the
 dedicated private key: rotating it requires a migration release using a
-Developer ID-signed DMG, rather than the current ZIP format.
+Developer ID-signed DMG in the update feed, rather than the current ZIP update format.
+Publishing a human-download DMG does not by itself change that update channel.
 When upgrading Sparkle, update both its SwiftPM pin and the verified tool-download
 version/checksum in the release workflow.
 

@@ -26,7 +26,7 @@ jobs:
         run: swift test --disable-automatic-resolution
       - name: Validate packaging scripts and plist
         run: |
-          bash -n scripts/bundle.sh scripts/sign.sh scripts/notarize.sh scripts/prepare-release.sh scripts/sign-release.sh scripts/generate-icon.sh
+          bash -n scripts/bundle.sh scripts/sign.sh scripts/notarize.sh scripts/prepare-release.sh scripts/sign-release.sh scripts/generate-icon.sh scripts/make-dmg.sh scripts/check-dmg.sh site/deploy.sh site/infra/provision.sh
           plutil -lint Resources/Info.plist
           xmllint --noout Resources/AppIcon.svg Resources/menubar/DontMissTemplate.svg Resources/menubar/DontMissAttentionTemplate.svg
       - name: Test Sparkle public-key preflight with disposable keys
@@ -35,6 +35,11 @@ jobs:
         env:
           BUILD_ARCH: arm64
         run: bash scripts/bundle.sh
+      - name: Build and verify drag-to-Applications disk image
+        run: |
+          set -euo pipefail
+          bash scripts/make-dmg.sh "dist/Don't Miss.app" dist/DontMiss.dmg
+          bash scripts/check-dmg.sh dist/DontMiss.dmg
       - name: Archive bundle for artifact round-trip
         run: ditto -c -k --keepParent "dist/Don't Miss.app" dist/DontMiss-build.zip
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

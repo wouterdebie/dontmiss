@@ -1,0 +1,12 @@
+name: dontmiss-now-lb
+defaultService: https://www.googleapis.com/compute/v1/projects/wouterdebie-personal/global/backendBuckets/dontmiss-now-bucket-backend
+hostRules:
+  - hosts:
+      - www.dontmiss.now
+    pathMatcher: canonical
+pathMatchers:
+  - name: canonical
+    defaultUrlRedirect:
+      hostRedirect: dontmiss.now
+      redirectResponseCode: MOVED_PERMANENTLY_DEFAULT
+      stripQuery: false

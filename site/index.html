@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Don't Miss — free, open-source meeting reminders for Mac</title>
+  <meta name="description" content="Make your meetings harder to miss. Don't Miss is a free, MIT-licensed native macOS app with full-screen Google Calendar reminders, a menu-bar agenda, snooze, and meeting join.">
+  <link rel="canonical" href="https://dontmiss.now">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Don't Miss">
+  <meta property="og:title" content="Don't Miss — a little harder to miss.">
+  <meta property="og:description" content="Full-screen meeting reminders for your Mac. Free, open source, and MIT licensed. For macOS 14+ on Apple Silicon.">
+  <meta property="og:url" content="https://dontmiss.now">
+  <meta property="og:image" content="https://dontmiss.now/assets/social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Don't Miss. Full-screen meeting reminders for Mac. Free and open source.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="brand" href="#" aria-label="Don't Miss home">
+      <img src="assets/icon-256.png" alt="" width="36" height="36">
+      <span>Don't Miss<span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a class="nav-features" href="#features">Features</a>
+      <a href="https://github.com/wouterdebie/dontmiss">GitHub <span aria-hidden="true">↗</span></a>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark appearance" hidden>Dark</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> A little nudge. A lot less “sorry, I'm late.”</p>
+        <h1 id="hero-title">Deep in work.<br><span class="gradient-text">Still on time.</span></h1>
+        <p class="hero-description">Your next meeting deserves more than a notification in the corner. Get a full-screen reminder that brings you back to what’s next.</p>
+        <p class="free-label">100% free <span aria-hidden="true">/</span> Open source <span aria-hidden="true">/</span> MIT licensed</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/wouterdebie/dontmiss/releases/latest/download/DontMiss.dmg"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg> Download free</a>
+          <a class="button secondary" href="https://github.com/wouterdebie/dontmiss">View on GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="requirements">macOS 14+ · Apple Silicon · Signed &amp; notarized</p>
+        <p class="setup-note">A small setup first: bring your own Google OAuth desktop client.<br class="desktop-break"> <a href="https://github.com/wouterdebie/dontmiss/blob/main/README.md#google-calendar-setup">Follow the Google Calendar setup guide <span aria-hidden="true">↗</span></a></p>
+      </div>
+
+      <figure class="hero-preview">
+        <div class="desktop-preview" aria-hidden="true">
+          <div class="desktop-menu"><span>Don't Miss</span><span class="menu-right">◷ <span>Thu 9:59 AM</span></span></div>
+          <div class="ambient ambient-one"></div>
+          <div class="ambient ambient-two"></div>
+          <div class="reminder">
+            <img class="reminder-icon" src="assets/icon-256.png" alt="" width="68" height="68">
+            <div class="reminder-eyebrow">A MOMENT TO SWITCH GEARS</div>
+            <div class="reminder-title">Design catch-up</div>
+            <div class="reminder-time">10:00 – 10:30 AM <span>·</span> Google Meet</div>
+            <div class="countdown"><span class="pulse-dot"></span> Starts in 1 minute</div>
+            <div class="preview-join">Join meeting <span>↗</span></div>
+            <div class="preview-options"><span>Snooze 1 min</span><span>Dismiss <kbd>esc</kbd></span></div>
+          </div>
+          <div class="desktop-caption"><span class="tiny-dot"></span> A heads-up, right where you’re working.</div>
+        </div>
+        <figcaption>Illustrative reminder preview · not an app screenshot</figcaption>
+      </figure>
+    </section>
+
+    <div class="principles wrap" aria-label="Built for your Mac">
+      <p><span aria-hidden="true">⌘</span> Native SwiftUI &amp; AppKit</p>
+      <p><span aria-hidden="true">◎</span> Multiple Google accounts</p>
+      <p><span aria-hidden="true">◇</span> Read-only calendar access</p>
+      <p><span aria-hidden="true">↗</span> No subscription</p>
+    </div>
+
+    <section id="features" class="features wrap section-space" aria-labelledby="features-title">
+      <div class="section-heading">
+        <p class="eyebrow">LESS CALENDAR JUGGLING</p>
+        <h2 id="features-title">Stay in your flow.<br>Keep your next meeting in sight.</h2>
+        <p>A small app in your menu bar. A much bigger heads-up when you need it.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card spotlight">
+          <span class="feature-symbol" aria-hidden="true">⌁</span>
+          <h3>A reminder with a little presence.</h3>
+          <p>Frosted-glass, full-screen alerts appear on the display containing your mouse pointer. Set your lead time, add a sound, or take one more minute with snooze.</p>
+          <div class="display-art" aria-hidden="true">
+            <div class="mini-display"><div class="mini-alert"><span class="mini-bell">◷</span><span>It’s almost time.</span><i></i></div></div>
+            <div class="display-stand"></div>
+            <span class="display-label">On the screen you’re using</span>
+          </div>
+        </article>
+        <article class="feature-card agenda-card">
+          <span class="feature-symbol" aria-hidden="true">▤</span>
+          <h3>Your day, one click away.</h3>
+          <p>Open the menu-bar agenda for Today or the Next 7 days. Bring multiple Google accounts together and choose calendars for each.</p>
+          <div class="agenda-art" aria-hidden="true">
+            <div class="agenda-heading"><span>Today</span><span>3 events</span></div>
+            <div class="agenda-event"><span class="event-hour">10:00</span><div><strong>Design catch-up</strong><span>Work · Google Meet</span></div><span class="event-tag">Soon</span></div>
+            <div class="agenda-event purple"><span class="event-hour">12:30</span><div><strong>Lunch with Alex</strong><span>Personal</span></div></div>
+            <div class="agenda-event blue"><span class="event-hour">14:00</span><div><strong>Project check-in</strong><span>Work · Zoom</span></div></div>
+            <span class="example-label">Example agenda</span>
+          </div>
+        </article>
+        <article class="feature-card small-card">
+          <span class="feature-symbol" aria-hidden="true">↗</span>
+          <h3>From heads-up to hello.</h3>
+          <p>Join your meeting in one click. Open event details for guests, notes, and meeting links—without digging through calendar tabs.</p>
+        </article>
+        <article class="feature-card small-card">
+          <span class="feature-symbol" aria-hidden="true">⌖</span>
+          <h3>Know where you’re going.</h3>
+          <p>Preview resolved addresses and venues with inline Apple Maps. Open the place in Maps when it’s time to head out.</p>
+        </article>
+        <article class="feature-card small-card">
+          <span class="feature-symbol" aria-hidden="true">◴</span>
+          <h3>Your reminders. Your rules.</h3>
+          <p>Mute an occurrence or give it a custom lead time. Your choices stay local; your calendar events stay untouched.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="setup-section section-space" aria-labelledby="setup-title">
+      <div class="wrap setup-layout">
+        <div class="section-heading">
+          <p class="eyebrow">A LITTLE SETUP. THEN A LITTLE CALMER.</p>
+          <h2 id="setup-title">Your Mac.<br>Your calendars.</h2>
+          <p>Don’t Miss is free to use, but Google Calendar connection isn’t instant sign-in. You’ll need to create your own Google OAuth desktop client first.</p>
+          <a class="text-link" href="https://github.com/wouterdebie/dontmiss/blob/main/README.md#google-calendar-setup">Read the step-by-step setup guide <span aria-hidden="true">↗</span></a>
+        </div>
+        <ol class="setup-steps">
+          <li><div><h3>Give it a home on your Mac.</h3><p>Download the DMG, open it, and drag Don’t Miss into the Applications folder. Then eject the disk image and open the app from Applications. Requires macOS 14 or later on Apple Silicon.</p></div></li>
+          <li><div><h3>Bring your Google credentials.</h3><p>Enable the Google Calendar API in your Google Cloud project, configure consent, and create a Desktop app OAuth client. Import its JSON in Settings.</p></div></li>
+          <li><div><h3>Choose what deserves a heads-up.</h3><p>Connect your accounts, grant read-only calendar permissions, and choose calendars. Set your lead time and optionally enable launch at login.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="faq-section wrap section-space" aria-labelledby="faq-title">
+      <div class="section-heading">
+        <p class="eyebrow">THE SMALL PRINT, NOT SO SMALL</p>
+        <h2 id="faq-title">Good to know.</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Is it really free?</summary>
+          <p>Yes. Don’t Miss is free and open source under the <a href="https://github.com/wouterdebie/dontmiss/blob/main/LICENSE">MIT license</a>. No subscription, trial timer, or paid tier. Browse the source, report an issue, or make it your own on <a href="https://github.com/wouterdebie/dontmiss">GitHub</a>.</p>
+        </details>
+        <details>
+          <summary>Which Macs and calendars are supported?</summary>
+          <p>Release builds support Apple Silicon Macs running macOS 14 or later. Don’t Miss connects to Google Calendar, including multiple accounts with independent calendar selection. You’ll need your own OAuth desktop client; see the <a href="https://github.com/wouterdebie/dontmiss/blob/main/README.md#google-calendar-setup">setup guide</a>. Google OAuth apps in Testing mode may require reconnecting every seven days.</p>
+        </details>
+        <details>
+          <summary>What happens to my calendar data?</summary>
+          <p>Calendar access is read-only: Don’t Miss doesn’t create or edit events. OAuth credentials stay in macOS Keychain, and seven days of events are cached locally for reminders. Per-event reminder preferences also stay local.</p>
+          <p>When you open event details, physical location text may be sent to Apple for a Maps lookup. This requires internet access and does not use your device’s location. Check the returned place before traveling.</p>
+        </details>
+        <details>
+          <summary>Will it remind me when my Mac is asleep?</summary>
+          <p>No. Keep Don’t Miss running and your Mac awake and unlocked: it cannot alert while the Mac is asleep or at the lock screen. Cached events can still trigger reminders offline. All-day and declined events are skipped.</p>
+        </details>
+        <details>
+          <summary>How do updates work?</summary>
+          <p>Official releases are signed and notarized. Sparkle checks for signed updates daily while the app is running, and installation always needs your approval. You can also use Check for Updates or turn off automatic checks in Settings.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="closing wrap" aria-labelledby="closing-title">
+      <div class="closing-inner">
+        <img src="assets/icon-256.png" alt="" width="72" height="72" loading="lazy">
+        <p class="eyebrow">SMALL APP. TIMELY ENTRANCE.</p>
+        <h2 id="closing-title">Make room for what’s next.</h2>
+        <p>Free, open source, and right at home on your Mac.</p>
+        <a class="button primary" href="https://github.com/wouterdebie/dontmiss/releases/latest/download/DontMiss.dmg">Download free <span aria-hidden="true">↓</span></a>
+        <p class="closing-requirements">Apple Silicon · macOS 14+ · <a href="https://github.com/wouterdebie/dontmiss/blob/main/README.md#google-calendar-setup">Google OAuth setup required</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p><strong>Don't Miss.</strong> Made by <a href="https://github.com/wouterdebie">Wouter de Bie</a>.</p>
+    <nav aria-label="Footer navigation">
+      <a href="https://github.com/wouterdebie/dontmiss">Source</a>
+      <a href="https://github.com/wouterdebie/dontmiss/issues">Issues</a>
+      <a href="https://github.com/wouterdebie/dontmiss/blob/main/LICENSE">MIT license</a>
+    </nav>
+  </footer>
+  <script>
+    (() => {
+      const button = document.querySelector('.theme-toggle');
+      const preference = window.matchMedia('(prefers-color-scheme: dark)');
+      const isDark = () => document.documentElement.dataset.theme
+        ? document.documentElement.dataset.theme === 'dark'
+        : preference.matches;
+      const updateLabel = () => {
+        button.textContent = isDark() ? 'Light' : 'Dark';
+        button.setAttribute('aria-label', `Switch to ${isDark() ? 'light' : 'dark'} appearance`);
+      };
+      button.hidden = false;
+      button.addEventListener('click', () => {
+        document.documentElement.dataset.theme = isDark() ? 'light' : 'dark';
+        updateLabel();
+      });
+      preference.addEventListener('change', updateLabel);
+      updateLabel();
+    })();
+  </script>
+</body>
+</html>
