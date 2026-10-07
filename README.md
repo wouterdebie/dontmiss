@@ -36,6 +36,17 @@ your approval.
 Requires **macOS 14+** and **Xcode with Swift 6+**. SwiftPM downloads the pinned
 [Sparkle](https://sparkle-project.org/) dependency.
 
+CI and release jobs run on GitHub's Apple Silicon `xcode-27` image (macOS 27)
+with **Xcode 27.0** pinned, using the macOS 27 SDK. GitHub currently labels this
+runner image as preview; the selected Xcode is the stable 27.0 release, not a beta.
+To match CI locally, select Xcode 27.0 before building. The application's minimum
+deployment target remains **macOS 14**; building with a newer SDK does not raise it.
+Packaging explicitly uses SwiftPM's native build engine: Swift 6.4's new default
+engine currently stamps the deployment target as the linked SDK in this project.
+The bundler verifies the binary's SDK against the selected Xcode SDK before
+packaging. The native engine is deprecated upstream; revisit this workaround when
+updating the toolchain.
+
 ```sh
 swift package resolve
 swift test

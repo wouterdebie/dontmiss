@@ -93,11 +93,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if arguments.contains("--smoke-test") {
             model.testAlert()
             Task { @MainActor in
-                try await Task.sleep(for: .seconds(2))
-                let passed = model.smokeTestPassed()
-                print(passed ? "PASS: one full-screen overlay with native behind-window blur on the selected display." : "FAIL: active-display overlay or blur configuration.")
-                model.stop()
-                exit(passed ? 0 : 1)
+                do {
+                    try await Task.sleep(for: .seconds(2))
+                    let passed = model.smokeTestPassed()
+                    print(passed ? "PASS: one full-screen overlay with native behind-window blur on the selected display." : "FAIL: active-display overlay or blur configuration.")
+                    model.stop()
+                    exit(passed ? 0 : 1)
+                } catch {
+                    print("FAIL: \(error.localizedDescription)")
+                    model.stop()
+                    exit(1)
+                }
             }
             return
         }

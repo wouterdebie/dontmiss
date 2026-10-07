@@ -6,10 +6,17 @@ APP="$PWD/dist/Don't Miss.app"
 swift scripts/require-stopped-app.swift "$APP"
 VERSION="${VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "VERSION must be major.minor.patch" >&2; exit 1; }
-BUILD_ARGS=(-c release --disable-automatic-resolution)
+# Swift 6.4's swiftbuild engine stamps the deployment target as the linked SDK.
+BUILD_ARGS=(-c release --disable-automatic-resolution --build-system native)
 if [ -n "${BUILD_ARCH:-}" ]; then BUILD_ARGS+=(--arch "$BUILD_ARCH"); fi
 swift build "${BUILD_ARGS[@]}"
 BIN="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)"
+SDK_VERSION="$(xcrun --sdk macosx --show-sdk-version)"
+LINKED_SDK="$(xcrun vtool -show-build "$BIN/DontMiss" | awk '$1 == "sdk" { print $2 }')"
+if [ "$LINKED_SDK" != "$SDK_VERSION" ]; then
+    echo "Built binary SDK ($LINKED_SDK) does not match selected macOS SDK ($SDK_VERSION)" >&2
+    exit 1
+fi
 mkdir -p "$PWD/dist"
 STAGING="$(mktemp -d "$PWD/dist/.bundle.XXXXXX")"
 trap 'rm -rf "$STAGING"' EXIT
